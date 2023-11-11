@@ -1,0 +1,21 @@
+DIGEST 575522ef44e70bf0364c1d4bbed0534a
+Ftest
+def 11:11 <> f
+binder 20:20 <> n:1
+R26:28 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R25:25 test <> n:1 var
+R38:38 test <> f def
+def 53:54 <> f2
+R60:63 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R57:59 Coq.Init.Datatypes <> nat ind
+R64:66 Coq.Init.Datatypes <> nat ind
+binder 75:75 <> n:2
+R81:83 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R80:80 test <> n:2 var
+def 104:105 <> f2
+binder 114:114 <> n:3
+R120:122 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R119:119 test <> n:3 var
+R133:134 test <> f2 def
+R155:155 test <> f def
+R167:167 test <> f def

@@ -1,0 +1,1230 @@
+   0  $accept : %entry% $end
+
+   1  program : INT DIMENSIONS OF config END opt_statements EOF
+
+   2  config : INT DOT_DOT INT
+   3         | fields
+
+   4  fields : field
+   5         | fields COMMA field
+
+   6  field : ID OF INT DOT_DOT INT
+
+   7  opt_statements :
+   8                 | statements
+
+   9  statements : statement
+  10             | statement statements
+
+  11  statement : cell ASSIGN expression
+  12            | ID ASSIGN expression
+
+  13  cell : LBRACKET INT COMMA INT RBRACKET
+
+  14  parant : LPAREN eval RPAREN
+
+  15  eval : add
+  16       | sub
+  17       | prio
+
+  18  prio : mult
+  19       | div
+  20       | modu
+  21       | unary
+
+  22  unary : ADD value
+  23        | ADD eval
+  24        | ADD parant
+  25        | SUB value
+  26        | SUB eval
+  27        | SUB parant
+
+  28  add : value ADD value
+  29      | value ADD eval
+  30      | value ADD parant
+  31      | parant ADD value
+
+  32  sub : value SUB value
+  33      | value SUB eval
+  34      | value SUB parant
+  35      | parant SUB value
+
+  36  mult : value MULT value
+  37       | value MULT eval
+  38       | value MULT parant
+  39       | parant MULT value
+
+  40  div : value DIV value
+  41      | value DIV eval
+  42      | value DIV parant
+  43      | parant DIV value
+
+  44  modu : value MODU value
+  45       | value MODU eval
+  46       | value MODU parant
+  47       | parant MODU value
+
+  48  expr : expr ADD value
+  49       | value
+
+  50  value : cell
+  51        | INT
+  52        | ID
+
+  53  expression : cell
+  54             | INT
+  55             | ID
+  56             | eval
+
+  57  %entry% : '\001' program
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . program  (57)
+
+	INT  shift 3
+	.  error
+
+	program  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	program : INT . DIMENSIONS OF config END opt_statements EOF  (1)
+
+	DIMENSIONS  shift 5
+	.  error
+
+
+state 4
+	%entry% : '\001' program .  (57)
+
+	.  reduce 57
+
+
+state 5
+	program : INT DIMENSIONS . OF config END opt_statements EOF  (1)
+
+	OF  shift 6
+	.  error
+
+
+state 6
+	program : INT DIMENSIONS OF . config END opt_statements EOF  (1)
+
+	ID  shift 7
+	INT  shift 8
+	.  error
+
+	config  goto 9
+	fields  goto 10
+	field  goto 11
+
+
+state 7
+	field : ID . OF INT DOT_DOT INT  (6)
+
+	OF  shift 12
+	.  error
+
+
+state 8
+	config : INT . DOT_DOT INT  (2)
+
+	DOT_DOT  shift 13
+	.  error
+
+
+state 9
+	program : INT DIMENSIONS OF config . END opt_statements EOF  (1)
+
+	END  shift 14
+	.  error
+
+
+state 10
+	config : fields .  (3)
+	fields : fields . COMMA field  (5)
+
+	COMMA  shift 15
+	END  reduce 3
+
+
+state 11
+	fields : field .  (4)
+
+	.  reduce 4
+
+
+state 12
+	field : ID OF . INT DOT_DOT INT  (6)
+
+	INT  shift 16
+	.  error
+
+
+state 13
+	config : INT DOT_DOT . INT  (2)
+
+	INT  shift 17
+	.  error
+
+
+state 14
+	program : INT DIMENSIONS OF config END . opt_statements EOF  (1)
+	opt_statements : .  (7)
+
+	LBRACKET  shift 18
+	ID  shift 19
+	EOF  reduce 7
+
+	opt_statements  goto 20
+	statements  goto 21
+	statement  goto 22
+	cell  goto 23
+
+
+state 15
+	fields : fields COMMA . field  (5)
+
+	ID  shift 7
+	.  error
+
+	field  goto 24
+
+
+state 16
+	field : ID OF INT . DOT_DOT INT  (6)
+
+	DOT_DOT  shift 25
+	.  error
+
+
+state 17
+	config : INT DOT_DOT INT .  (2)
+
+	.  reduce 2
+
+
+state 18
+	cell : LBRACKET . INT COMMA INT RBRACKET  (13)
+
+	INT  shift 26
+	.  error
+
+
+state 19
+	statement : ID . ASSIGN expression  (12)
+
+	ASSIGN  shift 27
+	.  error
+
+
+state 20
+	program : INT DIMENSIONS OF config END opt_statements . EOF  (1)
+
+	EOF  shift 28
+	.  error
+
+
+state 21
+	opt_statements : statements .  (8)
+
+	.  reduce 8
+
+
+state 22
+	statements : statement .  (9)
+	statements : statement . statements  (10)
+
+	LBRACKET  shift 18
+	ID  shift 19
+	EOF  reduce 9
+
+	statements  goto 29
+	statement  goto 22
+	cell  goto 23
+
+
+state 23
+	statement : cell . ASSIGN expression  (11)
+
+	ASSIGN  shift 30
+	.  error
+
+
+state 24
+	fields : fields COMMA field .  (5)
+
+	.  reduce 5
+
+
+state 25
+	field : ID OF INT DOT_DOT . INT  (6)
+
+	INT  shift 31
+	.  error
+
+
+state 26
+	cell : LBRACKET INT . COMMA INT RBRACKET  (13)
+
+	COMMA  shift 32
+	.  error
+
+
+state 27
+	statement : ID ASSIGN . expression  (12)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 36
+	INT  shift 37
+	.  error
+
+	cell  goto 38
+	expression  goto 39
+	parant  goto 40
+	eval  goto 41
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 49
+
+
+state 28
+	program : INT DIMENSIONS OF config END opt_statements EOF .  (1)
+
+	.  reduce 1
+
+
+state 29
+	statements : statement statements .  (10)
+
+	.  reduce 10
+
+
+state 30
+	statement : cell ASSIGN . expression  (11)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 36
+	INT  shift 37
+	.  error
+
+	cell  goto 38
+	expression  goto 50
+	parant  goto 40
+	eval  goto 41
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 49
+
+
+state 31
+	field : ID OF INT DOT_DOT INT .  (6)
+
+	.  reduce 6
+
+
+state 32
+	cell : LBRACKET INT COMMA . INT RBRACKET  (13)
+
+	INT  shift 51
+	.  error
+
+
+state 33
+	unary : ADD . value  (22)
+	unary : ADD . eval  (23)
+	unary : ADD . parant  (24)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 55
+	eval  goto 56
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 57
+
+
+state 34
+	unary : SUB . value  (25)
+	unary : SUB . eval  (26)
+	unary : SUB . parant  (27)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 58
+	eval  goto 59
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 60
+
+
+state 35
+	parant : LPAREN . eval RPAREN  (14)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 40
+	eval  goto 61
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 49
+
+
+state 36
+	value : ID .  (52)
+	expression : ID .  (55)
+
+	EOF  reduce 55
+	LBRACKET  reduce 55
+	ADD  reduce 52
+	SUB  reduce 52
+	MULT  reduce 52
+	DIV  reduce 52
+	MODU  reduce 52
+	ID  reduce 55
+
+
+state 37
+	value : INT .  (51)
+	expression : INT .  (54)
+
+	EOF  reduce 54
+	LBRACKET  reduce 54
+	ADD  reduce 51
+	SUB  reduce 51
+	MULT  reduce 51
+	DIV  reduce 51
+	MODU  reduce 51
+	ID  reduce 54
+
+
+state 38
+	value : cell .  (50)
+	expression : cell .  (53)
+
+	EOF  reduce 53
+	LBRACKET  reduce 53
+	ADD  reduce 50
+	SUB  reduce 50
+	MULT  reduce 50
+	DIV  reduce 50
+	MODU  reduce 50
+	ID  reduce 53
+
+
+state 39
+	statement : ID ASSIGN expression .  (12)
+
+	.  reduce 12
+
+
+state 40
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	.  error
+
+
+state 41
+	expression : eval .  (56)
+
+	.  reduce 56
+
+
+state 42
+	eval : add .  (15)
+
+	.  reduce 15
+
+
+state 43
+	eval : sub .  (16)
+
+	.  reduce 16
+
+
+state 44
+	eval : prio .  (17)
+
+	.  reduce 17
+
+
+state 45
+	prio : mult .  (18)
+
+	.  reduce 18
+
+
+state 46
+	prio : div .  (19)
+
+	.  reduce 19
+
+
+state 47
+	prio : modu .  (20)
+
+	.  reduce 20
+
+
+state 48
+	prio : unary .  (21)
+
+	.  reduce 21
+
+
+state 49
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	.  error
+
+
+state 50
+	statement : cell ASSIGN expression .  (11)
+
+	.  reduce 11
+
+
+state 51
+	cell : LBRACKET INT COMMA INT . RBRACKET  (13)
+
+	RBRACKET  shift 72
+	.  error
+
+
+state 52
+	value : ID .  (52)
+
+	.  reduce 52
+
+
+state 53
+	value : INT .  (51)
+
+	.  reduce 51
+
+
+state 54
+	value : cell .  (50)
+
+	.  reduce 50
+
+
+state 55
+	unary : ADD parant .  (24)
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 24
+	LBRACKET  reduce 24
+	RPAREN  reduce 24
+	ID  reduce 24
+
+
+state 56
+	unary : ADD eval .  (23)
+
+	.  reduce 23
+
+
+state 57
+	unary : ADD value .  (22)
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 22
+	LBRACKET  reduce 22
+	RPAREN  reduce 22
+	ID  reduce 22
+
+
+state 58
+	unary : SUB parant .  (27)
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 27
+	LBRACKET  reduce 27
+	RPAREN  reduce 27
+	ID  reduce 27
+
+
+state 59
+	unary : SUB eval .  (26)
+
+	.  reduce 26
+
+
+state 60
+	unary : SUB value .  (25)
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 25
+	LBRACKET  reduce 25
+	RPAREN  reduce 25
+	ID  reduce 25
+
+
+state 61
+	parant : LPAREN eval . RPAREN  (14)
+
+	RPAREN  shift 73
+	.  error
+
+
+state 62
+	add : parant ADD . value  (31)
+
+	LBRACKET  shift 18
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	value  goto 74
+
+
+state 63
+	sub : parant SUB . value  (35)
+
+	LBRACKET  shift 18
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	value  goto 75
+
+
+state 64
+	mult : parant MULT . value  (39)
+
+	LBRACKET  shift 18
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	value  goto 76
+
+
+state 65
+	div : parant DIV . value  (43)
+
+	LBRACKET  shift 18
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	value  goto 77
+
+
+state 66
+	modu : parant MODU . value  (47)
+
+	LBRACKET  shift 18
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	value  goto 78
+
+
+state 67
+	add : value ADD . value  (28)
+	add : value ADD . eval  (29)
+	add : value ADD . parant  (30)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 79
+	eval  goto 80
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 81
+
+
+state 68
+	sub : value SUB . value  (32)
+	sub : value SUB . eval  (33)
+	sub : value SUB . parant  (34)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 82
+	eval  goto 83
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 84
+
+
+state 69
+	mult : value MULT . value  (36)
+	mult : value MULT . eval  (37)
+	mult : value MULT . parant  (38)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 85
+	eval  goto 86
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 87
+
+
+state 70
+	div : value DIV . value  (40)
+	div : value DIV . eval  (41)
+	div : value DIV . parant  (42)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 88
+	eval  goto 89
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 90
+
+
+state 71
+	modu : value MODU . value  (44)
+	modu : value MODU . eval  (45)
+	modu : value MODU . parant  (46)
+
+	LBRACKET  shift 18
+	ADD  shift 33
+	SUB  shift 34
+	LPAREN  shift 35
+	ID  shift 52
+	INT  shift 53
+	.  error
+
+	cell  goto 54
+	parant  goto 91
+	eval  goto 92
+	add  goto 42
+	sub  goto 43
+	prio  goto 44
+	mult  goto 45
+	div  goto 46
+	modu  goto 47
+	unary  goto 48
+	value  goto 93
+
+
+state 72
+	cell : LBRACKET INT COMMA INT RBRACKET .  (13)
+
+	.  reduce 13
+
+
+state 73
+	parant : LPAREN eval RPAREN .  (14)
+
+	.  reduce 14
+
+
+state 74
+	add : parant ADD value .  (31)
+
+	.  reduce 31
+
+
+state 75
+	sub : parant SUB value .  (35)
+
+	.  reduce 35
+
+
+state 76
+	mult : parant MULT value .  (39)
+
+	.  reduce 39
+
+
+state 77
+	div : parant DIV value .  (43)
+
+	.  reduce 43
+
+
+state 78
+	modu : parant MODU value .  (47)
+
+	.  reduce 47
+
+
+state 79
+	add : value ADD parant .  (30)
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 30
+	LBRACKET  reduce 30
+	RPAREN  reduce 30
+	ID  reduce 30
+
+
+state 80
+	add : value ADD eval .  (29)
+
+	.  reduce 29
+
+
+state 81
+	add : value . ADD value  (28)
+	add : value ADD value .  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 28
+	LBRACKET  reduce 28
+	RPAREN  reduce 28
+	ID  reduce 28
+
+
+state 82
+	add : parant . ADD value  (31)
+	sub : value SUB parant .  (34)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 34
+	LBRACKET  reduce 34
+	RPAREN  reduce 34
+	ID  reduce 34
+
+
+state 83
+	sub : value SUB eval .  (33)
+
+	.  reduce 33
+
+
+state 84
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value SUB value .  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 32
+	LBRACKET  reduce 32
+	RPAREN  reduce 32
+	ID  reduce 32
+
+
+state 85
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : value MULT parant .  (38)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 38
+	LBRACKET  reduce 38
+	RPAREN  reduce 38
+	ID  reduce 38
+
+
+state 86
+	mult : value MULT eval .  (37)
+
+	.  reduce 37
+
+
+state 87
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value MULT value .  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 36
+	LBRACKET  reduce 36
+	RPAREN  reduce 36
+	ID  reduce 36
+
+
+state 88
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : value DIV parant .  (42)
+	div : parant . DIV value  (43)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 42
+	LBRACKET  reduce 42
+	RPAREN  reduce 42
+	ID  reduce 42
+
+
+state 89
+	div : value DIV eval .  (41)
+
+	.  reduce 41
+
+
+state 90
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value DIV value .  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 40
+	LBRACKET  reduce 40
+	RPAREN  reduce 40
+	ID  reduce 40
+
+
+state 91
+	add : parant . ADD value  (31)
+	sub : parant . SUB value  (35)
+	mult : parant . MULT value  (39)
+	div : parant . DIV value  (43)
+	modu : value MODU parant .  (46)
+	modu : parant . MODU value  (47)
+
+	ADD  shift 62
+	SUB  shift 63
+	MULT  shift 64
+	DIV  shift 65
+	MODU  shift 66
+	EOF  reduce 46
+	LBRACKET  reduce 46
+	RPAREN  reduce 46
+	ID  reduce 46
+
+
+state 92
+	modu : value MODU eval .  (45)
+
+	.  reduce 45
+
+
+state 93
+	add : value . ADD value  (28)
+	add : value . ADD eval  (29)
+	add : value . ADD parant  (30)
+	sub : value . SUB value  (32)
+	sub : value . SUB eval  (33)
+	sub : value . SUB parant  (34)
+	mult : value . MULT value  (36)
+	mult : value . MULT eval  (37)
+	mult : value . MULT parant  (38)
+	div : value . DIV value  (40)
+	div : value . DIV eval  (41)
+	div : value . DIV parant  (42)
+	modu : value . MODU value  (44)
+	modu : value MODU value .  (44)
+	modu : value . MODU eval  (45)
+	modu : value . MODU parant  (46)
+
+	ADD  shift 67
+	SUB  shift 68
+	MULT  shift 69
+	DIV  shift 70
+	MODU  shift 71
+	EOF  reduce 44
+	LBRACKET  reduce 44
+	RPAREN  reduce 44
+	ID  reduce 44
+
+
+Rules never reduced:
+	expr : expr ADD value  (48)
+	expr : value  (49)
+
+
+22 terminals, 22 nonterminals
+58 grammar rules, 94 states

@@ -1,0 +1,26 @@
+DIGEST aed336719bb28d6b7034ef6880248894
+Ftest
+R6:9 Coq.Init.Datatypes <> true constr
+R18:22 Coq.Init.Datatypes <> false constr
+def 38:39 <> et
+binder 41:41 <> a:1
+binder 43:43 <> b:2
+R58:58 test <> a:1 var
+R72:75 Coq.Init.Datatypes <> true constr
+R80:80 test <> b:2 var
+R88:92 Coq.Init.Datatypes <> false constr
+R97:101 Coq.Init.Datatypes <> false constr
+R193:194 test <> et def
+R196:199 Coq.Init.Datatypes <> true constr
+R201:204 Coq.Init.Datatypes <> true constr
+R300:303 Coq.Init.Datatypes <> andb def
+R311:314 Coq.Init.Datatypes <> true constr
+R305:309 Coq.Init.Datatypes <> false constr
+R323:325 Coq.Init.Datatypes <> orb def
+R333:336 Coq.Init.Datatypes <> true constr
+R327:331 Coq.Init.Datatypes <> false constr
+R345:348 Coq.Init.Datatypes <> negb def
+R350:354 Coq.Init.Datatypes <> false constr
+R374:377 Coq.Init.Datatypes <> andb def
+R384:387 Coq.Init.Datatypes <> true constr
+R379:382 Coq.Init.Datatypes <> true constr

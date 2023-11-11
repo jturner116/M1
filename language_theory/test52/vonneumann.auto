@@ -1,0 +1,11 @@
+2 dimensions of 0..1 end
+
+sum := 0
+
+for x in vonneumann do
+	sum := sum + x
+end
+
+if sum > 2 then
+	[0, 0] := 1
+end

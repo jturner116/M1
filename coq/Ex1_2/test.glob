@@ -1,0 +1,43 @@
+DIGEST 4e30de5cb2aded51042b250dcb0766e4
+Ftest
+def 11:11 <> g
+binder 13:13 <> x:1
+binder 15:15 <> y:2
+R21:23 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R20:20 test <> x:1 var
+R25:27 Coq.Init.Peano <> ::nat_scope:x_'*'_x not
+R28:28 test <> y:2 var
+def 43:43 <> f
+binder 52:52 <> n:3
+R58:60 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R57:57 test <> n:3 var
+def 76:77 <> g2
+binder 86:86 <> x:4
+binder 88:88 <> y:5
+R94:96 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R93:93 test <> x:4 var
+R98:100 Coq.Init.Peano <> ::nat_scope:x_'*'_x not
+R101:101 test <> y:5 var
+def 115:116 <> g3
+binder 125:125 <> x:6
+binder 135:135 <> y:7
+R141:143 Coq.Init.Peano <> ::nat_scope:x_'+'_x not
+R140:140 test <> x:6 var
+R145:147 Coq.Init.Peano <> ::nat_scope:x_'*'_x not
+R148:148 test <> y:7 var
+R159:159 test <> g def
+R169:169 test <> g def
+R192:192 test <> g def
+R217:217 test <> g def
+def 237:248 <> repeat_twice
+binder 250:250 <> f:8
+R256:258 Coq.Init.Datatypes <> nat ind
+binder 253:253 <> x:9
+R264:264 test <> f:8 var
+R267:267 test <> f:8 var
+R269:269 test <> x:9 var
+R280:291 test <> repeat_twice def
+R322:333 test <> repeat_twice def
+R335:335 test <> f def
+R357:368 test <> repeat_twice def
+R370:370 test <> f def

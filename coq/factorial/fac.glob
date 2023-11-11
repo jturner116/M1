@@ -1,0 +1,10 @@
+DIGEST 3dbc6ac8505713c226c3bbce32ab95c8
+Ffac
+def 9:17 <> factorial
+binder 19:19 <> n:1
+R32:32 fac <> n:1 var
+R54:54 Coq.Init.Datatypes <> S constr
+R62:64 Coq.Init.Peano <> ::nat_scope:x_'*'_x not
+R61:61 fac <> n:1 var
+R65:73 fac <> factorial:2 def
+R101:109 fac <> factorial def
