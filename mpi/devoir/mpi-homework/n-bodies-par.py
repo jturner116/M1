@@ -7,6 +7,7 @@ import random
 import matplotlib.pyplot as plt
 import time
 import numpy as np
+from mpi4py import MPI
 
 ID, POSX, POSY, SPEEDX, SPEEDY, WEIGHT = range(6)
 
@@ -83,24 +84,55 @@ NBSTEPS = int(sys.argv[2])
 DISPLAY = len(sys.argv) != 4
 
 # Modify only starting here (and in the imports)
-random.seed(0)
-data = init_world(nbbodies)
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
+random.seed(0)
+
+if rank == 0:
+    data = init_world(nbbodies)  # Assuming nbbodies is predefined
+else:
+    data = None
+
+# Determine the local size for each process
+local_nbbodies = nbbodies // size + (nbbodies % size > rank)
+local_data = np.empty((local_nbbodies, 2), dtype='f')
+
+# Scatter data to all processes
+comm.Scatter(data, local_data, root=0)
 
 start_time = time.time()
-for t in range(NBSTEPS):
-    if DISPLAY:
-        displayPlot(data)
-    force = np.zeros((nbbodies, 2)) # force[i] is a 2D vector
-    for i in range(nbbodies):
-        for j in range(nbbodies):
-            force[i] = force[i] + interaction(data[i], data[j])
-    for i in range(nbbodies):
-        data[i] = update(data[i], force[i])
 
-print("Duration : ", time.time()-start_time)
-print("Signature of the world :")
-print(signature(data))
+for t in range(NBSTEPS):
+    # Initialize force array locally
+    local_force = np.zeros((local_nbbodies, 2))
+
+    # Gather all data to each process (needed for force calculation)
+    all_data = np.empty((nbbodies, 2), dtype='f')
+    comm.Allgather(local_data, all_data)
+
+    # Calculate forces locally
+    for i in range(local_nbbodies):
+        for j in range(nbbodies):
+            local_force[i] += interaction(all_data[i], all_data[j])
+
+    # Update local data
+    for i in range(local_nbbodies):
+        local_data[i] = update(local_data[i], local_force[i])
+
+# Gather updated data back to root
+final_data = None
+if rank == 0:
+    final_data = np.empty((nbbodies, 2), dtype='f')
+
+comm.Gather(local_data, final_data, root=0)
+
+if rank == 0:
+    duration = time.time() - start_time
+    print("Duration: ", duration)
+    print("Signature of the world:")
+    print(signature(final_data))  # Assuming signature is a defined function
 
 
 
