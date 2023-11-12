@@ -95,6 +95,7 @@ if rank == 0:
 else:
     data = None
 
+start_time = time.time()
 local_nbbodies = nbbodies // size + (nbbodies % size > rank)
 local_data = np.empty((local_nbbodies, 6), dtype='f')
 
@@ -102,7 +103,6 @@ comm.Scatter(data, local_data, root=0)
 
 offset = sum(nbbodies // size + (nbbodies % size > r) for r in range(rank))
 
-start_time = time.time()
 
 for t in range(NBSTEPS):
     local_force = np.zeros((local_nbbodies, 2))
