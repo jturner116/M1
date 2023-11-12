@@ -105,19 +105,24 @@ offset = sum(nbbodies // size + (nbbodies % size > r) for r in range(rank))
 start_time = time.time()
 
 for t in range(NBSTEPS):
-    local_force = np.zeros((local_nbbodies, 2))
+    local_force = np.zeros((nbbodies, 2), dtype='f') 
 
     all_data = np.empty((nbbodies, 6), dtype='f')
     comm.Allgather(local_data, all_data)
 
     for i in range(local_nbbodies):
         global_i = i + offset
-        for j in range(nbbodies):
-            if global_i != j:
-                local_force[i] += interaction(all_data[global_i], all_data[j])
+        for j in range(global_i):
+            force_j_on_i = interaction(all_data[global_i], all_data[j])
+            local_force[global_i] += force_j_on_i
+            local_force[j] -= force_j_on_i
+
+    total_force = np.empty((nbbodies, 2), dtype='f')
+    comm.Allreduce(local_force, total_force, op=MPI.SUM)
 
     for i in range(local_nbbodies):
-        local_data[i] = update(local_data[i], local_force[i])
+        global_i = i + offset
+        local_data[i] = update(local_data[i], total_force[global_i])
 
 final_data = None
 if rank == 0:
@@ -130,4 +135,4 @@ if rank == 0:
     duration = time.time() - start_time
     print("Duration: ", duration)
     print("Signature of the world:")
-    print(signature(final_data))
+    print(signature(final_data)) 
