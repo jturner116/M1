@@ -97,10 +97,12 @@ else:
 
 # Determine the local size for each process
 local_nbbodies = nbbodies // size + (nbbodies % size > rank)
-local_data = np.empty((local_nbbodies, 2), dtype='f')
+local_data = np.empty((local_nbbodies, 6), dtype='f')
 
 # Scatter data to all processes
 comm.Scatter(data, local_data, root=0)
+
+offset = sum(nbbodies // size + (nbbodies % size > r) for r in range(rank))
 
 start_time = time.time()
 
@@ -109,13 +111,15 @@ for t in range(NBSTEPS):
     local_force = np.zeros((local_nbbodies, 2))
 
     # Gather all data to each process (needed for force calculation)
-    all_data = np.empty((nbbodies, 2), dtype='f')
+    all_data = np.empty((nbbodies, 6), dtype='f')
     comm.Allgather(local_data, all_data)
 
     # Calculate forces locally
     for i in range(local_nbbodies):
+        global_i = i + offset
         for j in range(nbbodies):
-            local_force[i] += interaction(all_data[i], all_data[j])
+            if global_i != j:
+                local_force[i] += interaction(all_data[global_i], all_data[j])
 
     # Update local data
     for i in range(local_nbbodies):
@@ -124,18 +128,13 @@ for t in range(NBSTEPS):
 # Gather updated data back to root
 final_data = None
 if rank == 0:
-    final_data = np.empty((nbbodies, 2), dtype='f')
+    final_data = np.empty((nbbodies, 6), dtype='f')
 
 comm.Gather(local_data, final_data, root=0)
 
-#testing ssh git origin
 
 if rank == 0:
     duration = time.time() - start_time
     print("Duration: ", duration)
     print("Signature of the world:")
     print(signature(final_data))  # Assuming signature is a defined function
-
-
-
-

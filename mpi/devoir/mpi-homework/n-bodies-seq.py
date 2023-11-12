@@ -86,9 +86,6 @@ DISPLAY = len(sys.argv) != 4
 random.seed(0)
 data = init_world(nbbodies)
 
-print(data.shape)
-print(type(data))
-
 start_time = time.time()
 for t in range(NBSTEPS):
     if DISPLAY:
