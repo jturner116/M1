@@ -128,6 +128,8 @@ if rank == 0:
 
 comm.Gather(local_data, final_data, root=0)
 
+#testing ssh git origin
+
 if rank == 0:
     duration = time.time() - start_time
     print("Duration: ", duration)
