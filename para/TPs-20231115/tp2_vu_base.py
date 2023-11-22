@@ -2,17 +2,28 @@ import sys
 import os
 import time
 import random
-from multiprocessing import Process
+from multiprocessing import Process, Lock, Value, Condition
 
 class Road:
     def __init__(self):
-        pass
+        self.lock = Lock()
+        self.condition = Condition(self.lock)
+        self.nb_vehicules = Value('i', 0)
+        self.current_direction = Value('i', -1)
         
     def enter_road(self, direction):
-        pass
+        with self.condition:
+            while self.nb_vehicules.value > 0 and self.current_direction.value != direction:
+                self.condition.wait()
+            self.nb_vehicules.value += 1
+            self.current_direction.value = direction
 
     def exit_road(self):
-        pass
+        with self.condition:
+            self.nb_vehicules.value -= 1
+            if self.nb_vehicules.value == 0:
+                self.current_direction.value = -1
+                self.condition.notify_all()
 
 def drive(road_type, direction, identifier):
     print("Vehicule %d, coming from %d goes through the %s" % (identifier, direction, road_type))

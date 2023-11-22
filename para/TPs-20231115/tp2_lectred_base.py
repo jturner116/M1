@@ -1,24 +1,40 @@
 import sys
 import time
 import random
-from multiprocessing import Process
+from multiprocessing import Process, Value, Lock, Condition
 
 class RW:
     def __init__(self):
-        pass
+        self.lock = Lock()
+        self.readers = Value('i', 0)
+        self.writers = Value('i', 0)
+        self.can_read = Condition(self.lock)
+        self.can_write = Condition(self.lock)
 
     def start_read(self):
-        pass
+        with self.can_read:
+            while self.writers.value > 0:
+                self.can_read.wait()
+            self.readers.value += 1
+            self.can_read.notify()
 
     def end_read(self):
-        pass
+        with self.can_read:
+            self.readers.value -= 1
+            if self.readers.value == 0:
+                self.can_write.notify()
 
     def start_write(self):
-        pass
+        with self.can_write:
+            self.writers.value += 1
+            while self.readers.value != 0:
+                self.can_write.wait()
 
     def end_write(self):
-        pass
-
+        with self.can_write:
+            self.writers.value -= 1
+            self.can_write.notify()
+            self.can_read.notify()
 
 def process_writer(identifier, synchro):
     synchro.start_write()
