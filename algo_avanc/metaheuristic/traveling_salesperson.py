@@ -48,17 +48,19 @@ def best_neighbor(path: list, cities: list):
         for j in range(i+1, len(path)):
             new_path = path.copy()
             new_path[i], new_path[j] = new_path[j], new_path[i]
+            print(f'2-swap path: {new_path}')
             new_dist = find_dist(new_path, cities)
             if new_dist < best_dist:
                 best_dist = new_dist
                 best_path = new_path
-    # 2-opt method for finding best neighbor - currently gives list index out of range error
-    for i in range(1, len(path)-2):
+    # 2-opt method for finding best neighbor 
+    for i in range(1, len(path)-1):
         for j in range(i+1, len(path)):
-            new_path = path[:i] + path[i:j][::-1] + path[j:]
+            new_path = path.copy()
+            new_path[i:j] =  new_path[i:j][::-1]
+            print(f'2-opt path: {new_path}')
             new_dist = find_dist(new_path, cities)
             if new_dist < best_dist:
-                print("OPT WON")
                 best_dist = new_dist
                 best_path = new_path
 
