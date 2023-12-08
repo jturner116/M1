@@ -2,39 +2,84 @@ import sys
 import time
 import random
 from multiprocessing import Process, Value, Lock, Condition
+from collections import deque
+
+
+class ExtendedCondition:
+    def __init__(self, lock):
+        self.high_priority_waiters = deque()
+        self.normal_priority_waiters = deque()
+        self.lock = lock
+        self.condition = Condition(lock)
+
+    def __enter__(self):
+        self.lock.acquire()
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        self.lock.release()
+
+    def wait(self, priority=1):
+        waiter = Condition(self.lock)
+        if priority == 0:
+            self.high_priority_waiters.append(waiter)
+        else:
+            self.normal_priority_waiters.append(waiter)
+
+        waiter.acquire()
+        self.lock.release()
+        waiter.wait()
+        self.lock.acquire()
+        waiter.release()
+
+    def notify(self):
+        if self.high_priority_waiters:
+            waiter = self.high_priority_waiters.popleft()
+            waiter.acquire()
+            waiter.notify()
+            waiter.release()
+        elif self.normal_priority_waiters:
+            waiter = self.normal_priority_waiters.popleft()
+            waiter.acquire()
+            waiter.notify()
+            waiter.release()
+
+    def empty(self):
+        return not (self.high_priority_waiters or self.normal_priority_waiters)
 
 class RW:
     def __init__(self):
         self.lock = Lock()
         self.readers = Value('i', 0)
         self.writers = Value('i', 0)
-        self.can_read = Condition(self.lock)
-        self.can_write = Condition(self.lock)
+        self.can_read = ExtendedCondition(self.lock)
+        self.can_write = ExtendedCondition(self.lock)
 
     def start_read(self):
         with self.can_read:
             while self.writers.value > 0:
                 self.can_read.wait()
             self.readers.value += 1
-            self.can_read.notify()
 
     def end_read(self):
         with self.can_read:
             self.readers.value -= 1
-            if self.readers.value == 0:
+            if self.readers.value == 0 and not self.can_write.empty():
                 self.can_write.notify()
 
     def start_write(self):
         with self.can_write:
             self.writers.value += 1
             while self.readers.value != 0:
-                self.can_write.wait()
+                self.can_write.wait(priority=0)
 
     def end_write(self):
         with self.can_write:
             self.writers.value -= 1
-            self.can_write.notify()
-            self.can_read.notify()
+            if not self.can_read.empty():
+                self.can_read.notify()
+            elif not self.can_write.empty():
+                self.can_write.notify()
 
 def process_writer(identifier, synchro):
     synchro.start_write()
@@ -45,7 +90,7 @@ def process_writer(identifier, synchro):
             print('Writer', identifier, 'just wrote', txt)
         time.sleep(.1 + random.random())            
     synchro.end_write()
-    
+
 def process_reader(identifier, synchro):
     synchro.start_read()
     position = 0
