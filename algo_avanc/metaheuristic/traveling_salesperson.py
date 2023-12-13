@@ -1,10 +1,9 @@
 # Traveling salesperson problem
-
-import sys
 import argparse
 from dataclasses import dataclass
 import math
 import numpy as np
+
 
 @dataclass
 class City:
@@ -12,57 +11,59 @@ class City:
     x: int
     y: int
 
+
 # read from file
+
 
 def readfile(filename):
     with open(filename) as f:
         lines = f.readlines()
-    
     num_cities = int(lines[0])
     cities = []
-
     for line in lines[1:]:
         id, x, y = line.split()
         cities.append(City(int(id), int(x), int(y)))
     return num_cities, cities
 
+
 def find_dist(path: list, cities: list):
-    
     total_dist = 0
-    total_dist =+ math.sqrt((cities[path[0]].x - 0)**2 + (cities[path[0]].y - 0)**2)
+    total_dist = +math.sqrt((cities[path[0]].x - 0) ** 2 + (cities[path[0]].y - 0) ** 2)
     for i in range(1, len(path)):
-        prev_city = cities[path[i-1]] 
-        current_city = cities[path[i]] 
-        total_dist += math.sqrt((current_city.x - prev_city.x)**2 + 
-                                (current_city.y - prev_city.y)**2)
+        prev_city = cities[path[i - 1]]
+        current_city = cities[path[i]]
+        total_dist += math.sqrt(
+            (current_city.x - prev_city.x) ** 2 + (current_city.y - prev_city.y) ** 2
+        )
     last_city = cities[path[-1]]
-    total_dist += math.sqrt((last_city.x - 0)**2 + 
-                            (last_city.y - 0)**2)
+    total_dist += math.sqrt((last_city.x - 0) ** 2 + (last_city.y - 0) ** 2)
     return total_dist
+
 
 def best_neighbor(path: list, cities: list):
     best_dist = find_dist(path, cities)
     best_path = path
     # 2-swap method for finding best neighbor
-    for i in range(1, len(path)-1):
-        for j in range(i+1, len(path)):
+    for i in range(1, len(path) - 1):
+        for j in range(i + 1, len(path)):
             new_path = path.copy()
             new_path[i], new_path[j] = new_path[j], new_path[i]
             new_dist = find_dist(new_path, cities)
             if new_dist < best_dist:
                 best_dist = new_dist
                 best_path = new_path
-    # 2-opt method for finding best neighbor 
-    for i in range(1, len(path)-1):
-        for j in range(i+1, len(path)):
+    # 2-opt method for finding best neighbor
+    for i in range(1, len(path) - 1):
+        for j in range(i + 1, len(path)):
             new_path = path.copy()
-            new_path[i:j] =  new_path[i:j][::-1]
+            new_path[i:j] = new_path[i:j][::-1]
             new_dist = find_dist(new_path, cities)
             if new_dist < best_dist:
                 best_dist = new_dist
                 best_path = new_path
 
     return best_path, best_dist
+
 
 def steepest_hill_climbing(path: list, cities: list, max_iter=100):
     best_dist = find_dist(path, cities)
@@ -77,6 +78,7 @@ def steepest_hill_climbing(path: list, cities: list, max_iter=100):
         else:
             break
     return best_path, best_dist, max_iter - temp_iter
+
 
 def iter_shc(path: list, cities: list, max_essais=100):
     best_dist = find_dist(path, cities)
@@ -95,8 +97,8 @@ def iter_shc(path: list, cities: list, max_essais=100):
 
 def generate_neighbors(path, cities, tabou_list):
     neighbors = []
-    for i in range(1, len(path)-1):
-        for j in range(i+1, len(path)):
+    for i in range(1, len(path) - 1):
+        for j in range(i + 1, len(path)):
             new_path = path.copy()
             new_path[i:j] = new_path[i:j][::-1]
             if new_path not in tabou_list:
@@ -104,16 +106,19 @@ def generate_neighbors(path, cities, tabou_list):
                 neighbors.append((new_path, new_dist))
     return neighbors
 
+
 def generate_2opt_neighbors(path, cities, tabou_list):
     neighbors = []
     for i in range(1, len(path) - 2):
         for j in range(i + 1, len(path)):
-            if j - i == 1: continue  # Skip adjacent edges as it doesn't change the path
+            if j - i == 1:
+                continue  # Skip adjacent edges as it doesn't change the path
             new_path = path[:i] + path[i:j][::-1] + path[j:]
             if new_path not in tabou_list:
                 new_dist = find_dist(new_path, cities)
                 neighbors.append((new_path, new_dist))
     return neighbors
+
 
 def tabu_search(path: list, cities: list, max_iter=100, tabou_size=10):
     best_dist = find_dist(path, cities)
@@ -132,10 +137,10 @@ def tabu_search(path: list, cities: list, max_iter=100, tabou_size=10):
     return best_path, best_dist
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Traveling salesperson problem')
-    parser.add_argument('filename', help='file containing the graph')
-    parser.add_argument('max_essais', help='maximum number of iterations', default=100)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Traveling salesperson problem")
+    parser.add_argument("filename", help="file containing the graph")
+    parser.add_argument("max_essais", help="maximum number of iterations", default=100)
 
     args = parser.parse_args()
 
@@ -149,24 +154,25 @@ if __name__ == '__main__':
     print(type(rand_city_graph))
     best_path, best_dist = best_neighbor(rand_city_graph, cities)
 
-    shc_path, shc_dist , iters_used = steepest_hill_climbing(rand_city_graph, cities, 10)
+    shc_path, shc_dist, iters_used = steepest_hill_climbing(rand_city_graph, cities, 10)
 
-    iter_shc_path, iter_shc_dist, iter_shc_essai = iter_shc(rand_city_graph, cities, max)
+    iter_shc_path, iter_shc_dist, iter_shc_essai = iter_shc(
+        rand_city_graph, cities, max
+    )
 
-    print(f'Random path: {rand_city_graph}')
-    print(f'Random dist: {find_dist(rand_city_graph, cities)}')
-    print('----------------------')
-    print(f'SHC Best neighbor path: {shc_path}')
-    print(f'SHC Best neighbor dist: {shc_dist}')
-    print(f'SHC Iterations used: {iters_used}')
-    print('----------------------')
-    print(f'Iter SHC Best neighbor path: {iter_shc_path}')
-    print(f'Iter SHC Best neighbor dist: {iter_shc_dist}')
-    print(f'Iter SHC Essai found: {iter_shc_essai}')
-    print('----------------------')
-    print('Tabou search:')
-
+    print(f"Random path: {rand_city_graph}")
+    print(f"Random dist: {find_dist(rand_city_graph, cities)}")
+    print("----------------------")
+    print(f"SHC Best neighbor path: {shc_path}")
+    print(f"SHC Best neighbor dist: {shc_dist}")
+    print(f"SHC Iterations used: {iters_used}")
+    print("----------------------")
+    print(f"Iter SHC Best neighbor path: {iter_shc_path}")
+    print(f"Iter SHC Best neighbor dist: {iter_shc_dist}")
+    print(f"Iter SHC Essai found: {iter_shc_essai}")
+    print("----------------------")
+    print("Tabou search:")
 
     tabou_path, tabou_dist = tabu_search(rand_city_graph, cities, 100, 200)
-    print(f'Tabou path: {tabou_path}')
-    print(f'Tabou dist: {tabou_dist}')
+    print(f"Tabou path: {tabou_path}")
+    print(f"Tabou dist: {tabou_dist}")
