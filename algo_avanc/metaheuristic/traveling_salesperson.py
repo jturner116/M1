@@ -1,8 +1,11 @@
 # Traveling salesperson problem
+# Jonah Turner
+# TPA11 IAFA
 import argparse
 from dataclasses import dataclass
 import math
 import numpy as np
+from time import time
 
 
 @dataclass
@@ -10,9 +13,6 @@ class City:
     id: int
     x: int
     y: int
-
-
-# read from file
 
 
 def readfile(filename):
@@ -65,11 +65,12 @@ def best_neighbor(path: list, cities: list):
     return best_path, best_dist
 
 
-def steepest_hill_climbing(path: list, cities: list, max_iter=100):
+def steepest_hill_climbing(path: list, cities: list, max_iter=10):
     best_dist = find_dist(path, cities)
     best_path = path
     temp_iter = max_iter
-    while True:
+    print(f"SHC Max Iter: {max_iter}")
+    while temp_iter > 0:
         temp_iter -= 1
         new_path, new_dist = best_neighbor(best_path, cities)
         if new_dist < best_dist:
@@ -87,24 +88,12 @@ def iter_shc(path: list, cities: list, max_essais=100):
 
     for i in range(max_essais):
         new_path = np.random.permutation(path)
-        new_path, new_dist, _ = steepest_hill_climbing(new_path, cities, 100)
+        new_path, new_dist, _ = steepest_hill_climbing(new_path, cities, max_essais)
         if new_dist < best_dist:
             essai_trouve = i
             best_dist = new_dist
             best_path = new_path
     return best_path, best_dist, essai_trouve
-
-
-def generate_neighbors(path, cities, tabou_list):
-    neighbors = []
-    for i in range(1, len(path) - 1):
-        for j in range(i + 1, len(path)):
-            new_path = path.copy()
-            new_path[i:j] = new_path[i:j][::-1]
-            if new_path not in tabou_list:
-                new_dist = find_dist(new_path, cities)
-                neighbors.append((new_path, new_dist))
-    return neighbors
 
 
 def generate_2opt_neighbors(path, cities, tabou_list):
@@ -120,7 +109,7 @@ def generate_2opt_neighbors(path, cities, tabou_list):
     return neighbors
 
 
-def tabu_search(path: list, cities: list, max_iter=100, tabou_size=10):
+def tabu_search(path: list, cities: list, max_iter=20, tabou_size=10):
     best_dist = find_dist(path, cities)
     best_path = path
     tabou_list = [path]
@@ -140,39 +129,45 @@ def tabu_search(path: list, cities: list, max_iter=100, tabou_size=10):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Traveling salesperson problem")
     parser.add_argument("filename", help="file containing the graph")
-    parser.add_argument("max_essais", help="maximum number of iterations", default=100)
+    parser.add_argument("max_essais", help="maximum number of iterations", default=10)
+    parser.add_argument(
+        "tabou_iters", help="number of iterations for tabou search", default=200
+    )
 
     args = parser.parse_args()
 
     # read from file
     num_cities, cities = readfile(args.filename)
+    start = time()
     max = int(args.max_essais)
+    tabou_iters = int(args.tabou_iters)
 
     total_dist = 0
 
     rand_city_graph = np.random.permutation(num_cities).tolist()
-    print(type(rand_city_graph))
     best_path, best_dist = best_neighbor(rand_city_graph, cities)
+    print(f"Random path: {rand_city_graph}")
+    print(f"Random dist: {find_dist(rand_city_graph, cities)}")
+    print("----------------------")
 
-    shc_path, shc_dist, iters_used = steepest_hill_climbing(rand_city_graph, cities, 10)
+    shc_path, shc_dist, iters_used = steepest_hill_climbing(
+        rand_city_graph, cities, max
+    )
+    print(f"SHC Best neighbor path: {shc_path}")
+    print(f"SHC Best neighbor dist: {shc_dist}")
+    print(f"SHC Iterations used: {iters_used}")
 
     iter_shc_path, iter_shc_dist, iter_shc_essai = iter_shc(
         rand_city_graph, cities, max
     )
 
-    print(f"Random path: {rand_city_graph}")
-    print(f"Random dist: {find_dist(rand_city_graph, cities)}")
-    print("----------------------")
-    print(f"SHC Best neighbor path: {shc_path}")
-    print(f"SHC Best neighbor dist: {shc_dist}")
-    print(f"SHC Iterations used: {iters_used}")
     print("----------------------")
     print(f"Iter SHC Best neighbor path: {iter_shc_path}")
     print(f"Iter SHC Best neighbor dist: {iter_shc_dist}")
     print(f"Iter SHC Essai found: {iter_shc_essai}")
     print("----------------------")
     print("Tabou search:")
-
-    tabou_path, tabou_dist = tabu_search(rand_city_graph, cities, 100, 200)
+    tabou_path, tabou_dist = tabu_search(rand_city_graph, cities, tabou_iters, 200)
     print(f"Tabou path: {tabou_path}")
     print(f"Tabou dist: {tabou_dist}")
+    print(f"Total time: {time() - start}")
