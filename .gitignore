@@ -2,3 +2,6 @@
 *.lock
 *.zip
 *.DS_Store
+hello*
+.gitignore
+*.vscode
